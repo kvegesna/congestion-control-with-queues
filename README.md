@@ -1,3 +1,2 @@
-# proj
-# bandwidth-reservation-with-queues
-# bandwidth-reservation-with-queues
+# Bandwidth Reservation with Queus
+# 
