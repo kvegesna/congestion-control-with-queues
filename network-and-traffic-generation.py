@@ -16,7 +16,7 @@ from mininet.log import setLogLevel
 
 from sys import argv
 
-class SingleSwitchTopo(Topo):
+class topologyCreation(Topo):
     "Single switch connected to n hosts."
     def __init__(self, n=2, **opts):
         Topo.__init__(self, **opts)
@@ -29,7 +29,7 @@ class SingleSwitchTopo(Topo):
 
 def perfTest():
     "Create network and run simple performance test"
-    topo = SingleSwitchTopo( n=4,)
+    topo = topologyCreation( n=4,)
     net = Mininet( topo=topo,
                    host=CPULimitedHost, link=TCLink,
                    autoStaticArp=True )
