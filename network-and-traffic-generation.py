@@ -1,7 +1,12 @@
 #!/usr/bin/python
 
 """
-Creation of a network with numerous hosts and 1 switch. The aim is to create network congestion with a lot of traffic flow. I have two types of traffic: TCP and UDP! 
+Simple example of setting network and CPU parameters
+
+NOTE: link params limit BW, add latency, and loss.
+There is a high chance that pings WILL fail and that
+iperf will hang indefinitely if the TCP handshake fails
+to complete.
 """
 
 from __future__ import print_function
@@ -13,42 +18,58 @@ from mininet.link import TCLink
 from mininet.util import dumpNodeConnections
 from mininet.log import setLogLevel
 
-
 from sys import argv
 
-class topologyCreation(Topo):
+class TwoSwitchTopo(Topo):
     "Single switch connected to n hosts."
-    def __init__(self, n=2, **opts):
+    def __init__(self, n=2, lossy=True, **opts):
         Topo.__init__(self, **opts)
         switch = self.addSwitch('s1')
+        switch2 = self.addSwitch('s2')
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
-            self.addLink(host, switch)
+            if lossy:
+                # 10 Mbps, 5ms delay, 10% packet loss
+                if h <= (n/2):
+                    self.addLink(host, switch,
+                    bw=10, delay='5ms', loss=10, use_htb=True)
+                else:
+                    self.addLink(host, switch2,
+                    bw=10, delay='5ms', loss=10, use_htb=True)
+            else:
+                # 10 Mbps, 5ms delay, no packet loss
+                if h <= (n/2):
+                    self.addLink(host, switch,
+                    bw=10, delay='5ms', loss=10, use_htb=True)
+                else:
+                    self.addLink(host, switch2,
+                    bw=10, delay='5ms', loss=10, use_htb=True)
 
 
-
-def perfTest():
+def BwidthTest( lossy=True ):
     "Create network and run simple performance test"
-    topo = topologyCreation( n=4,)
+    topo = TwoSwitchTopo( n=4, lossy=lossy )
     net = Mininet( topo=topo,
                    host=CPULimitedHost, link=TCLink,
                    autoStaticArp=True )
     net.start()
     print( "Dumping host connections" )
     dumpNodeConnections(net.hosts)
-    print( "Testing throughput between hosts" )
+    print( "Testing throughput between h1 and h4" )
     h1, h4 = net.getNodeByName('h1', 'h4')
-    net.iperf( ( h1, h4 ), l4Type='UDP', udpBw='1000M')
-    net.iperf( ( h1, h4 ), l4Type='TCP' )
+    net.iperf( ( h1, h4 ), l4Type='UDP' )
+    print( "Testing throughput between h1 and h3" )
     h1, h3 = net.getNodeByName('h1', 'h3')
     net.iperf( ( h1, h3 ), l4Type='UDP' )
-    net.iperf( ( h1, h3 ), l4Type='TCP' )
-    h1, h2 = net.getNodeByName('h1', 'h2')
-    net.iperf( ( h1, h2 ), l4Type='UDP' )
-    net.iperf( ( h1, h2 ), l4Type='TCP' )
-
+    print( "Testing throughput between h2 and h4" )
+    h2, h4 = net.getNodeByName('h2', 'h4')
+    net.iperf( ( h2, h4 ), l4Type='UDP' )
+    print( "Testing throughput between h2 and h3" )
+    h2, h3 = net.getNodeByName('h2', 'h3')
+    net.iperf( ( h2, h3 ), l4Type='UDP' )
     net.stop()
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    perfTest( )
+    # Prevent test_simpleperf from failing due to packet loss
+    BwidthTest( lossy=( 'testmode' not in argv ) )
