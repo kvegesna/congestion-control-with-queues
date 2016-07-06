@@ -1,13 +1,9 @@
 #!/usr/bin/python
 
 """
-Simple example of setting network and CPU parameters
-
-NOTE: link params limit BW, add latency, and loss.
-There is a high chance that pings WILL fail and that
-iperf will hang indefinitely if the TCP handshake fails
-to complete.
-"""
+Python Script that creates 4 hosts and 2 switches. The 2 Open vSwitches are connected via a TCLink, with a bandwidth limit of 10 mbps, 
+5 ms delay/latency, and 10% packet loss. 
+""""
 
 from __future__ import print_function
 
