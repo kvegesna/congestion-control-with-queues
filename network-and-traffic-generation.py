@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# Karthik Vegesna 
 """
 Python Script that creates 4 hosts and 2 switches. The 2 Open vSwitches are connected via a TCLink, with a bandwidth limit of 10 mbps, 
 5 ms delay/latency, and 10% packet loss. 
