@@ -19,10 +19,12 @@ class TwoSwitchTopo(Topo):
         Topo.__init__(self, **opts)
         switch = self.addSwitch('s1')
         switch2 = self.addSwitch('s2')
+        self.addLink(switch, switch2,
+                    bw=10, delay='5ms', loss=10, use_htb=True)
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
             if lossy:
-                if h <= (n/2):
+                if h <= ((n/2) - 1):
                     self.addLink(host, switch,
                     bw=10, delay='5ms', loss=10, use_htb=True)
                 else:
@@ -36,6 +38,8 @@ class TwoSwitchTopo(Topo):
                 else:
                     self.addLink(host, switch2,
                     bw=10, delay='5ms', loss=10, use_htb=True)
+                    
+
 
 
 def BwidthTest( lossy=True ):
