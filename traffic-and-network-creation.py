@@ -21,7 +21,7 @@ class TwoSwitchTopo(Topo):
         switch2 = self.addSwitch('s2')
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
-if lossy:
+            if lossy:
                 if h <= (n/2):
                     self.addLink(host, switch,
                     bw=10, delay='5ms', loss=10, use_htb=True)
