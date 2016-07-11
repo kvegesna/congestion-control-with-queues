@@ -1,9 +1,6 @@
+
 #!/usr/bin/python
 # Karthik Vegesna 
-"""
-Python Script that creates 4 hosts and 2 switches. The 2 Open vSwitches are connected via a TCLink, with a bandwidth limit of 10 mbps, 
-5 ms delay/latency, and 10% packet loss. 
-""""
 
 from __future__ import print_function
 
@@ -25,7 +22,6 @@ class TwoSwitchTopo(Topo):
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
             if lossy:
-                # 10 Mbps, 5ms delay, 10% packet loss
                 if h <= (n/2):
                     self.addLink(host, switch,
                     bw=10, delay='5ms', loss=10, use_htb=True)
@@ -48,21 +44,26 @@ def BwidthTest( lossy=True ):
     net = Mininet( topo=topo,
                    host=CPULimitedHost, link=TCLink,
                    autoStaticArp=True )
-    net.start()
-    print( "Dumping host connections" )
-    dumpNodeConnections(net.hosts)
+                   net.start()
     print( "Testing throughput between h1 and h4" )
     h1, h4 = net.getNodeByName('h1', 'h4')
-    net.iperf( ( h1, h4 ), l4Type='UDP' )
+    h4.popen("iperf -s -u", shell = True)
+    h3.popen("iperf -s -u", shell = True)
+    h2.popen("iperf -s -u", shell = True)
+    h1.popen("iperf -c -u", shell = True)
+    process  = h1.popen("iperf -u -s 10.0.0.4 -p 5001 -t 1", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
     print( "Testing throughput between h1 and h3" )
-    h1, h3 = net.getNodeByName('h1', 'h3')
-    net.iperf( ( h1, h3 ), l4Type='UDP' )
-    print( "Testing throughput between h2 and h4" )
-    h2, h4 = net.getNodeByName('h2', 'h4')
-    net.iperf( ( h2, h4 ), l4Type='UDP' )
-    print( "Testing throughput between h2 and h3" )
-    h2, h3 = net.getNodeByName('h2', 'h3')
-    net.iperf( ( h2, h3 ), l4Type='UDP' )
+    process  = h1.popen("iperf -u -s 10.0.0.3 -p 5001 -t 1", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
+    print( "Testing throughput between h1 and h2" )
+    h1, h2 = net.getNodeByName('h1', 'h2')
+    h2.popen("iperf -s -u", shell = True)
+    process  = h1.popen("iperf -u -s 10.0.0.2 -p 5001 -t 1", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
     net.stop()
 
 if __name__ == '__main__':
