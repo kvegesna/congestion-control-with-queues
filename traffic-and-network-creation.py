@@ -32,7 +32,7 @@ class TwoSwitchTopo(Topo):
                     bw=10, delay='5ms', loss=10, use_htb=True)
             else:
                 # 10 Mbps, 5ms delay, no packet loss
-                if h <= (n/2):
+                if h <= ((n/2)-1):
                     self.addLink(host, switch,
                     bw=10, delay='5ms', loss=10, use_htb=True)
                 else:
