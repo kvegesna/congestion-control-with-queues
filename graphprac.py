@@ -19,8 +19,6 @@ for i,line in enumerate(lines):
         str2 = line.split()[5]
         print (line.split()[5])
         variable = []
-
-
         break
 
 x = [2, 4, 6, 8, 10]
