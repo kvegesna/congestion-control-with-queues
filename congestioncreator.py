@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 # Karthik Vegesna 
 
@@ -11,6 +10,8 @@ from mininet.node import CPULimitedHost
 from mininet.link import TCLink
 from mininet.util import dumpNodeConnections
 from mininet.log import setLogLevel
+from mininet.cli import CLI
+import io
 
 from sys import argv
 
@@ -20,23 +21,28 @@ class TwoSwitchTopo(Topo):
         Topo.__init__(self, **opts)
         switch = self.addSwitch('s1')
         switch2 = self.addSwitch('s2')
+
+        self.addLink(switch, switch2,
+                    bw=5, delay='5ms', loss=0, use_htb=True)
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
             if lossy:
-                if h <= (n/2):
+                if h <= ((n/2) - 1):
                     self.addLink(host, switch,
-                    bw=10, delay='5ms', loss=10, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True)
                 else:
                     self.addLink(host, switch2,
-                    bw=10, delay='5ms', loss=10, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True)
             else:
                 # 10 Mbps, 5ms delay, no packet loss
-                if h <= (n/2):
+                if h <= ((n/2)-1):
                     self.addLink(host, switch,
-                    bw=10, delay='5ms', loss=10, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True)
                 else:
                     self.addLink(host, switch2,
-                    bw=10, delay='5ms', loss=10, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True)
+
+
 
 
 def BwidthTest( lossy=True ):
@@ -46,58 +52,66 @@ def BwidthTest( lossy=True ):
                    host=CPULimitedHost, link=TCLink,
                    autoStaticArp=True )
     net.start()
+    f = open('output.txt','w')
     print( "Testing throughput between h1 and h4" )
     #Return node(s) with given name(s) 
     h1, h2, h3, h4 = net.getNodeByName('h1', 'h2','h3','h4')
-    h4.popen("iperf -s ", shell = True)
-    h3.popen("iperf -s -u", shell = True)
-     h2.popen("iperf -s -u", shell = True)
-    h2.popen("iperf -s ", shell = True)
-
+    h4.popen("iperf -s -u", shell = True)
+    processC=h4.popen("iperf -s -p 5201 -i 1 -1", shell = True)
+    processD=h4.popen("iperf -s -p 5202 -i 1 -1", shell = True)
+    #h3.popen("iperf -s -u", shell = True)
+    #h2.popen("iperf -s -u", shell = True)
     #h1.popen("iperf -c -u", shell = True)
-    process  = h1.popen("iperf -c 10.0.0.2 -p 5001 -t 40 -i 1", shell=True)
-    sleep(1)
-
- #   print( "Throughput between h1 and h4, bwidth of 0" )
-#    h1.popen("iperf -u -c 10.0.0.2 -p 5001 -t 5 -b 0M", shell=True).communicate()
-
+    processA  = h1.popen("iperf -c 10.0.0.4 -p 5201 -t 100 -i 1 -b 5M", shell=True)
+    sleep(5)
     print( "Throughput between h1 and h4, bwidth of 2" )
-    h1.popen("iperf -u -c 10.0.0.2 -p 5001 -t 5 -b 2M", shell=True).communicate()
-
+    process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 2M", shell=True)
+    stdout, stderr = process.communicate()
+    #f.write(stdout)
+    print( stdout)
+    sleep(5)
+    processE=h4.popen("iperf -s -p 5202 -i 1 -1", shell = True)
     print( "Throughput between h1 and h4, bwidth of 4" )
-    h1.popen("iperf -u -c 10.0.0.2 -p 5001 -t 5 -b 4M", shell=True).communicate()
-
+    process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 4M", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
+    #f.write(stdout)
+    sleep(5)
+    processF=h4.popen("iperf -s -p 5202 -i 1 -1", shell = True)
     print( "Throughput between h1 and h4, bwidth of 6" )
-    h1.popen("iperf -u -c 10.0.0.2 -p 5001 -t 5 -b 6M", shell=True).communicate()
-
+    process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 6M", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
+    # f.write(stdout)
+    sleep(5)
+    processG=h4.popen("iperf -s -p 5202 -i 1 -1", shell = True)
     print( "Throughput between h1 and h4, bwidth of 8" )
-    h1.popen("iperf -u -c 10.0.0.2 -p 5001 -t 5 -b 8M", shell=True).communicate()
-
+    process = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 8M", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
+    #f.write(stdout)
+    sleep(5)
+    processH=h4.popen("iperf -s -p 5202 -i 1 -1", shell = True)
     print( "Throughput between h1 and h4, bwidth of 10" )
-    h1.popen("iperf -u -c 10.0.0.2 -p 5001 -t 5 -b 10M", shell=True).communicate()
-
-    while True:
-       line = process.stdout.readline()
-       if line:
-           print (line,)
-           print (".")
-           continue
-       else:
-           print ("?")
-       process.poll()
-       if process.returncode is not None:
-            print( "Exited with status:", process.returncode )
-            break
-       else:
-            print("!")
-       sleep( 1 )
-    #stdout, stderr = process.communicate()
-    #print( stdout )
+    process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 10M", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
+    #f.write(stdout)
+    sleep(5)
+    stdout1, stderr1 = processC.communicate()
+    print( stdout1 )
+    # f.write(stdout)
+    #print( "error:", stderr1 )
+    #f.write(stdout2))
+    #processC.kill()
+    stdout7, stderr7 = processA.communicate()
+    print( stdout7 )
+    f.write(stdout7)
+    print ("hello")
     net.stop()
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
     # Prevent test_simpleperf from failing due to packet loss
-    BwidthTest( lossy=( 'testmode' not in argv) )
-                                                                            
-                                                                                                                                                               29,1          Top
+    BwidthTest( lossy=( 'testmode' not in argv ) )
+
