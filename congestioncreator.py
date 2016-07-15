@@ -22,24 +22,24 @@ class TwoSwitchTopo(Topo):
         switch2 = self.addSwitch('s2')
 
         self.addLink(switch, switch2,
-                    bw=5, delay='5ms', loss=0, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
             if lossy:
                 if h <= ((n/2) - 1):
                     self.addLink(host, switch,
-                    bw=5, delay='5ms', loss=0, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
                 else:
                     self.addLink(host, switch2,
-                    bw=5, delay='5ms', loss=0, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
             else:
                 # 10 Mbps, 5ms delay, no packet loss
                 if h <= ((n/2)-1):
                     self.addLink(host, switch,
-                    bw=5, delay='5ms', loss=0, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
                 else:
                     self.addLink(host, switch2,
-                    bw=5, delay='5ms', loss=0, use_htb=True)
+                    bw=5, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
 def BwidthTest( lossy=True ):
     "Create network and run simple performance test"
     topo = TwoSwitchTopo( n=4, lossy=lossy )
@@ -63,7 +63,7 @@ def BwidthTest( lossy=True ):
     stdout, stderr = process.communicate()
     #f.write(stdout)
     print( stdout)
-    sleep(5)
+    sleep(10)
     print( "Throughput between h1 and h4, bwidth of 4" )
     process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 4M", shell=True)
     stdout, stderr = process.communicate()
@@ -77,11 +77,6 @@ def BwidthTest( lossy=True ):
     sleep(5)
     print( "Throughput between h1 and h4, bwidth of 8" )
     process = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 8M", shell=True)
-    stdout, stderr = process.communicate()
-    print( stdout )
-    sleep(5)
-    print( "Throughput between h1 and h4, bwidth of 10" )
-    process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 10M", shell=True)
     stdout, stderr = process.communicate()
     print( stdout )
     sleep(5)
