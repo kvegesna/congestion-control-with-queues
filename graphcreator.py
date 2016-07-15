@@ -111,7 +111,6 @@ for i, line in enumerate(lines):
             holder = lines[i]
             strholder = holder.split()[4]
             fltstrholder = float(strholder)
-
             total += fltstrholder
             x += 1
             i += 1
@@ -119,7 +118,6 @@ for i, line in enumerate(lines):
         x = 0
         print(avg3)
         total = 0
-
 
 x = [0, 2, 4, 6, 8]
 y = [[avg0, avg, avg1, avg2, avg3], [0, 0.1, 0.2, 0.3, 0.4, ]]
@@ -137,7 +135,3 @@ for y_arr, label in zip(y, labels):
 
 plt.legend()
 plt.show()
-
-
-
-
