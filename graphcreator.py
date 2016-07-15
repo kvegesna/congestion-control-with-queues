@@ -125,7 +125,7 @@ x = [0, 2, 4, 6, 8]
 y = [[avg0, avg, avg1, avg2, avg3], [0, 0.1, 0.2, 0.3, 0.4, ]]
 axes = plt.gca()
 axes.set_xlim([0, 10])
-axes.set_ylim([0,0.75])h ookkff
+axes.set_ylim([0,0.75])
 csfont = {'fontname': 'Helvetica Neue'}
 plt.title('Advantages of Bandwidth Limiting using iPerf and 10 MB Limit', **csfont)
 plt.xlabel('UDP Congestion(MBps)', **csfont)
