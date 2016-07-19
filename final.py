@@ -51,7 +51,7 @@ def BwidthTest( lossy=True ):
     net = Mininet( topo=topo,
                    host=CPULimitedHost, link=TCLink,
                    autoStaticArp=True )
- net.start()
+    net.start()
     run("ovs-ofctl add-flow s1 in_port=3,actions=output:1 ")
     run( "ovs-ofctl add-flow s2 in_port=1,actions=output:4" )
     run("ovs-ofctl add-flow s2 in_port=4,actions=output:1")
