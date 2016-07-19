@@ -20,12 +20,9 @@ class TwoSwitchTopo(Topo):
         Topo.__init__(self, **opts)
         switch = self.addSwitch('s1')
         switch2 = self.addSwitch('s2')
-
         self.addLink(switch, switch2,
-                    bw=5, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
-        
-        self.addLink(switch,switch2, bw =5, delay = '5ms', loss=0, use_htb=True, max_queue_size=25)
-        
+                    bw=10, delay='5ms', loss=0, use_htb=True, max_queue_size=25)
+                    
         for h in range(n):
             host = self.addHost('h%s' % (h + 1))
             if lossy:
