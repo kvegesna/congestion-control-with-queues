@@ -59,7 +59,7 @@ def BwidthTest( lossy=True ):
     #Creating a TCP Server for the long running TCP Process
     processC=h4.popen("iperf -s -p 5201 -i 1 -1", shell = True)
     processD=h4.popen("iperf -s -p 5202 -i 1", shell = True)
-    processA  = h1.popen("iperf -c 10.0.0.4 -p 5201 -t 100 -i 1 -b 5M", shell=True)
+    processA  = h1.popen("iperf -c 10.0.0.4 -p 5201 -t 100 -i 1 ", shell=True)
     sleep(5)
     print( "Throughput between h1 and h4, bwidth of 2" )
     process  = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 2M", shell=True)
@@ -83,6 +83,12 @@ def BwidthTest( lossy=True ):
     stdout, stderr = process.communicate()
     print( stdout )
     sleep(5)
+    print( "Throughput between h1 and h4, bwidth of 10" )
+    process = h1.popen("iperf -u -c 10.0.0.4 -p 5202 -t 10 -b 10M", shell=True)
+    stdout, stderr = process.communicate()
+    print( stdout )
+    sleep(5)
+
     stdout1, stderr1 = processC.communicate()
     print( stdout1 )
     f.write(stdout1)
